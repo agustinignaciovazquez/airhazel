@@ -1,8 +1,6 @@
 package ar.edu.itba.pod.api.model;
 
-import ar.edu.itba.pod.api.model.enums.FlightClass;
-import ar.edu.itba.pod.api.model.enums.FlightClassification;
-import ar.edu.itba.pod.api.model.enums.FlightType;
+import ar.edu.itba.pod.api.model.enums.*;
 import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.DataSerializable;
@@ -41,6 +39,51 @@ public class Flight implements DataSerializable {
         this.flightType = FlightType.fromString(flightType);
         this.originOaci = originOaci;
         this.destinationOaci = destinationOaci;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public FlightClassification getFlightClassification() {
+        return flightClassification;
+    }
+
+    public FlightClass getFlightClass() {
+        return flightClass;
+    }
+
+    public FlightType getFlightType() {
+        return flightType;
+    }
+
+    public String getOriginOaci() {
+        return originOaci;
+    }
+
+    public String getDestinationOaci() {
+        return destinationOaci;
+    }
+
+    public String getField(Field field) {
+        if(!(field instanceof FlightField))
+            throw new IllegalArgumentException();
+
+        FlightField flightField = (FlightField) field;
+        switch (flightField) {
+            case FLIGHT_CLASS:
+                return this.getFlightClass().getName();
+            case FLIGHT_CLASSIFICATION:
+                return this.getFlightClassification().getName();
+            case FLIGHT_TYPE:
+                return this.getFlightType().getName();
+            case ORIGIN_OACI:
+                return this.getOriginOaci();
+            case DESTINATION_OACI:
+                return this.getDestinationOaci();
+        }
+
+        throw new IllegalArgumentException();
     }
 
     //TODO VER ALGUNA FORMA DE GUARDAR EL ENUM Y NO EL STRING

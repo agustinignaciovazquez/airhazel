@@ -1,9 +1,13 @@
 package ar.edu.itba.pod.api.model;
+import ar.edu.itba.pod.api.model.enums.AirportField;
+import ar.edu.itba.pod.api.model.enums.Field;
 import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.DataSerializable;
 
 import java.io.IOException;
+
+import static ar.edu.itba.pod.api.model.enums.AirportField.*;
 
 public class Airport implements DataSerializable{
     private String oaci;
@@ -28,6 +32,23 @@ public class Airport implements DataSerializable{
 
     public String getState() {
         return state;
+    }
+
+    public String getField(Field field) {
+        if(!(field instanceof AirportField))
+            throw new IllegalArgumentException();
+
+        AirportField airportField = (AirportField) field;
+        switch (airportField) {
+            case OACI:
+                return this.getOaci();
+            case AIRPORT_NAME:
+                return this.getAirportName();
+            case STATE:
+                return this.getState();
+        }
+
+        throw new IllegalArgumentException();
     }
 
     @Override
