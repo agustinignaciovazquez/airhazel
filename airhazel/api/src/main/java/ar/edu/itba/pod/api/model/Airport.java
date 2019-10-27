@@ -1,13 +1,11 @@
 package ar.edu.itba.pod.api.model;
-import ar.edu.itba.pod.api.model.enums.AirportField;
-import ar.edu.itba.pod.api.model.enums.Field;
+import ar.edu.itba.pod.api.model.enums.field.AirportField;
+import ar.edu.itba.pod.api.model.enums.field.Field;
 import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.DataSerializable;
 
 import java.io.IOException;
-
-import static ar.edu.itba.pod.api.model.enums.AirportField.*;
 
 public class Airport implements DataSerializable{
     private String oaci;

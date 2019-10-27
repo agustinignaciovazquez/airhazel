@@ -20,7 +20,7 @@ public class ParallelFileReader implements FileReader {
     }
 
     @Override
-    public Collection<Flight> readMovements(File movementsFile) throws IOException {
+    public Collection<Flight> readFlights(File movementsFile) throws IOException {
         return Files.readAllLines(movementsFile.toPath(), Charset.forName("iso-8859-1")).parallelStream().skip(1)
                 .map(line -> line.split(";"))
                 .map(val -> new Flight(val[3], val[2],val[4], val[5], val[6]))

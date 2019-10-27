@@ -7,26 +7,26 @@ import java.nio.file.Path;
 
 public abstract class Query{
 
-    private HazelcastInstance client;
+    private HazelcastInstance hazelcastInstance;
     private File airportsFile;
-    private File movementsFile;
+    private File flightsFile;
 
-    public Query(HazelcastInstance client, File airportsFile, File movementsFile) {
-        this.client = client;
+    public Query(HazelcastInstance hazelcastInstance, File airportsFile, File flightsFile) {
+        this.hazelcastInstance = hazelcastInstance;
         this.airportsFile = airportsFile;
-        this.movementsFile = movementsFile;
+        this.flightsFile = flightsFile;
     }
 
-    public HazelcastInstance getClient() {
-        return client;
+    public HazelcastInstance getHazelcastInstance() {
+        return hazelcastInstance;
     }
 
     public File getAirportsFile() {
         return airportsFile;
     }
 
-    public File getMovementsFile() {
-        return movementsFile;
+    public File getFlightsFile() {
+        return flightsFile;
     }
 
     public abstract void readFiles();

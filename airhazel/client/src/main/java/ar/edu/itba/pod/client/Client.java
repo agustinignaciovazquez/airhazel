@@ -1,12 +1,78 @@
 package ar.edu.itba.pod.client;
 
-import org.slf4j.Logger;
+import ar.edu.itba.pod.api.query.*;
+import com.hazelcast.client.HazelcastClient;
+import com.hazelcast.client.config.ClientConfig;
+import com.hazelcast.client.config.ClientNetworkConfig;
+import com.hazelcast.core.HazelcastInstance;
 import org.slf4j.LoggerFactory;
 
-public class Client {
-    private static Logger logger = LoggerFactory.getLogger(Client.class);
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 
-    public static void main(String[] args) {
-        logger.info("airhazel Client Starting ...");
+public class Client {
+    private static org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Client.class);
+
+    public static void main(String[] args) throws URISyntaxException {
+        LOGGER.info("airhazel client Starting ...");
+
+        ClientConfig clientConfig = new ClientConfig();
+        ClientNetworkConfig networkConfig = clientConfig.getNetworkConfig();
+        clientConfig.getGroupConfig().setName("54393-56399-55382").setPassword("asdasd");
+
+        Parameters p = new Parameters();
+        networkConfig.addAddress(p.getAddresses().split(","));
+
+        HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(clientConfig);
+
+        File airportsFile = new File(p.getAirportsInPath());
+        File flightsFile = new File(p.getFlightsInPath());
+
+        Query query;
+
+        switch (p.getQuery()){
+            case "1":
+                query = new FlightsPerAirportQuery(hazelcastInstance, airportsFile, flightsFile);
+                break;
+            case "2":
+
+                break;
+            case "3":
+
+                break;
+            case "4":
+                query = new FlightsPerOriginAirportQuery(hazelcastInstance,airportsFile,flightsFile, p.getOaci(), p.getN())
+                break;
+            case "5":
+
+                break;
+            case "6":
+
+                break;
+            default:
+                LOGGER.error("Invalid query number.");
+                return;
+        }
+
+        Logger logger;
+        try {
+            logger = new Logger(p.getTimeOutPath(), Client.class);
+            logger.info("Inicio de la lectura de archivos");
+            query.readFiles();
+            logger.info("Fin de la lectura de archivos");
+            logger.info("Inicio del trabajo map/reduce");
+            query.mapReduce();
+            query.log(Paths.get(p.getOutPath()));
+            logger.info("Fin del trabajo map/reduce");
+            logger.close();
+        } catch (IOException e) {
+            LOGGER.error("I/O Exception while writing in log");
+        }
+
+        hazelcastInstance.shutdown();
     }
+
+
 }

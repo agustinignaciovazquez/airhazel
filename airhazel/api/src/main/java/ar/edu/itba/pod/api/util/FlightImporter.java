@@ -1,9 +1,7 @@
 package ar.edu.itba.pod.api.util;
 
 import ar.edu.itba.pod.api.model.Flight;
-import ar.edu.itba.pod.api.model.enums.AirportField;
-import ar.edu.itba.pod.api.model.enums.Field;
-import ar.edu.itba.pod.api.model.enums.FlightField;
+import ar.edu.itba.pod.api.model.enums.field.Field;
 import com.hazelcast.core.IList;
 import com.hazelcast.core.IMap;
 import com.hazelcast.core.MultiMap;

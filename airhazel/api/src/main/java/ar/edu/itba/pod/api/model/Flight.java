@@ -1,6 +1,8 @@
 package ar.edu.itba.pod.api.model;
 
 import ar.edu.itba.pod.api.model.enums.*;
+import ar.edu.itba.pod.api.model.enums.field.Field;
+import ar.edu.itba.pod.api.model.enums.field.FlightField;
 import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.DataSerializable;

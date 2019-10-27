@@ -11,6 +11,6 @@ public interface FileReader {
 
     Collection<Airport> readAirports(File airportsFile) throws IOException;
 
-    Collection<Flight> readMovements(File flightFile) throws IOException;
+    Collection<Flight> readFlights(File flightFile) throws IOException;
 
 }
