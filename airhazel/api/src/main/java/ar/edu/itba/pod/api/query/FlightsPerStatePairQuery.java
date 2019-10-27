@@ -1,10 +1,11 @@
 package ar.edu.itba.pod.api.query;
 
-import ar.edu.itba.pod.api.collator.FlightPerAirportCollator;
+import ar.edu.itba.pod.api.collator.FlightPerPairMinimumCollator;
 import ar.edu.itba.pod.api.combiner.SumCombinerFactory;
-import ar.edu.itba.pod.api.mapper.FlightPerAirportMapper;
+import ar.edu.itba.pod.api.mapper.FlightPerStatePairMapper;
 import ar.edu.itba.pod.api.model.Airport;
 import ar.edu.itba.pod.api.model.Flight;
+import ar.edu.itba.pod.api.model.Pair;
 import ar.edu.itba.pod.api.model.enums.field.AirportField;
 import ar.edu.itba.pod.api.reducer.CountReducerFactory;
 import ar.edu.itba.pod.api.util.AirportImporter;
@@ -12,12 +13,13 @@ import ar.edu.itba.pod.api.util.FileReader;
 import ar.edu.itba.pod.api.util.FlightImporter;
 import ar.edu.itba.pod.api.util.ParallelFileReader;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ICompletableFuture;
 import com.hazelcast.core.IList;
 import com.hazelcast.core.IMap;
 import com.hazelcast.mapreduce.Job;
+import com.hazelcast.mapreduce.JobCompletableFuture;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -26,20 +28,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-public class FlightsPerAirportQuery extends Query {
+public class FlightsPerStatePairQuery extends Query{
     private IList<Flight> flightsIList;
     private IMap<String, Airport> airportIMap;
-    private Set<Map.Entry<String, Long>> result;
+    private Set<Map.Entry<Pair<String, String>, Long>> result;
 
-    private static org.slf4j.Logger LOGGER = LoggerFactory.getLogger(FlightsPerAirportQuery.class);
+    private Long min;
+    private static Logger LOGGER = LoggerFactory.getLogger(FlightsPerStatePairQuery.class);
 
-    public FlightsPerAirportQuery(HazelcastInstance hazelcastInstance, File airportsFile, File flightsFile) {
+    public FlightsPerStatePairQuery(HazelcastInstance hazelcastInstance, File airportsFile, File flightsFile, Long min) {
         super(hazelcastInstance, airportsFile, flightsFile);
+        this.min = min;
     }
 
     public void readFiles(){
@@ -48,7 +51,6 @@ public class FlightsPerAirportQuery extends Query {
 
         Collection<Airport> airports = null;
         Collection<Flight> flights = null;
-
         try {
             airports = fileReader.readAirports(getAirportsFile());
             flights = fileReader.readFlights(getFlightsFile());
@@ -74,11 +76,11 @@ public class FlightsPerAirportQuery extends Query {
         final KeyValueSource<String, Flight> source = KeyValueSource.fromList(flightsIList);
         Job<String, Flight> job = jobTracker.newJob(source);
 
-        ICompletableFuture<Set<Map.Entry<String, Long>>> future = job
-                .mapper( new FlightPerAirportMapper() )
+        JobCompletableFuture<Set<Map.Entry<Pair<String, String>, Long>>> future = job
+                .mapper( new FlightPerStatePairMapper() )
                 .combiner( new SumCombinerFactory<>() )
                 .reducer( new CountReducerFactory<>() )
-                .submit( new FlightPerAirportCollator() );
+                .submit( new FlightPerPairMinimumCollator(this.min) );
 
         result = null;
         try {
@@ -92,13 +94,11 @@ public class FlightsPerAirportQuery extends Query {
     @Override
     public void log(Path path) {
 
-        String header = "OACI;Denominación;Movimientos\n";
-        try {
+        String header = "Provincia A;Provincia B;Movimientos\n";
+        try{
             Files.write(path, header.getBytes());
-
-            for (Map.Entry<String, Long> e : result) {
-                String oaci = e.getKey();
-                String out = oaci + ";" + airportIMap.get(oaci).getAirportName() + ";" + e.getValue() + "\n";
+            for (Map.Entry<Pair<String, String>, Long> e : result){
+                String out = e.getKey().getKey()+";"+e.getKey().getValue()+";"+e.getValue()+"\n";
                 Files.write(path, out.getBytes(), StandardOpenOption.APPEND);
             }
         }

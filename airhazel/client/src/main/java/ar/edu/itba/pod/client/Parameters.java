@@ -40,8 +40,8 @@ public class Parameters {
         return Integer.valueOf(n);
     }
 
-    public String getMin() {
-        return min;
+    public Long getMin() {
+        return new Long(min);
     }
 
     public String getAddresses() {

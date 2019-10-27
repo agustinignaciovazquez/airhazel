@@ -43,16 +43,16 @@ public class Client {
 
                 break;
             case "4":
-                query = new FlightsPerOriginAirportQuery(hazelcastInstance,airportsFile,flightsFile, p.getOaci(), p.getN())
+                query = new FlightsPerOriginAirportQuery(hazelcastInstance,airportsFile,flightsFile, p.getOaci(), p.getN());
                 break;
             case "5":
 
                 break;
             case "6":
-
+                query = new FlightsPerStatePairQuery(hazelcastInstance,airportsFile,flightsFile,p.getMin());
                 break;
             default:
-                LOGGER.error("Invalid query number.");
+                LOGGER.error("Client: Invalid query number");
                 return;
         }
 
@@ -68,7 +68,7 @@ public class Client {
             logger.info("Fin del trabajo map/reduce");
             logger.close();
         } catch (IOException e) {
-            LOGGER.error("I/O Exception while writing in log");
+            LOGGER.error("Client: I/O Exception while writing in log");
         }
 
         hazelcastInstance.shutdown();

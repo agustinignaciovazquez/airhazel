@@ -2,24 +2,21 @@ package ar.edu.itba.pod.api.collator;
 
 import com.hazelcast.mapreduce.Collator;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class FlightPerAirportCollator implements Collator<Map.Entry<String, Long>, List<Map.Entry<String, Long>>> {
+public class FlightPerAirportCollator implements Collator<Map.Entry<String, Long>, Set<Map.Entry<String, Long>>> {
     @Override
-    public List<Map.Entry<String, Long>> collate(Iterable<Map.Entry<String, Long>> values) {
-        List<Map.Entry<String, Long>> result = new ArrayList<>();
+    public Set<Map.Entry<String, Long>> collate(Iterable<Map.Entry<String, Long>> values) {
+        Set<Map.Entry<String, Long>> result = new TreeSet<>((o1, o2) -> {
+            if (!o1.getValue().equals(o2.getValue())){
+                return (o2.getValue().compareTo(o1.getValue()));
+            }
+            return o1.getKey().compareTo(o2.getKey());
+        });
+
         for (Map.Entry<String, Long> value : values) {
             result.add(value);
         }
-
-        /* Order by descending number of movements */
-        Comparator<Map.Entry<String, Long>> c = Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder());
-        /* Order by OACI */
-        c = c.thenComparing(Map.Entry::getKey);
-        result.sort(c);
         return result;
     }
 }
