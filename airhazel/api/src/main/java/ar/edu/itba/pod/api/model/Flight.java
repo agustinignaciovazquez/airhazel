@@ -33,12 +33,10 @@ public class Flight implements DataSerializable {
 
     public Flight(String flightClassification, String flightClass,
                   String flightType, String originOaci, String destinationOaci) {
-        this.id = count.incrementAndGet();
-        this.flightClassification = FlightClassification.fromString(flightClassification);
-        this.flightClass = FlightClass.fromString(flightClass);
-        this.flightType = FlightType.fromString(flightType);
-        this.originOaci = originOaci;
-        this.destinationOaci = destinationOaci;
+        this(FlightClassification.fromString(flightClassification),
+                FlightClass.fromString(flightClass),
+                FlightType.fromString(flightType),
+                originOaci,destinationOaci);
     }
 
     public Integer getId() {
