@@ -1,6 +1,6 @@
 package ar.edu.itba.pod.api.query;
 
-import ar.edu.itba.pod.api.collator.FlightPerPairMinimumCollator;
+import ar.edu.itba.pod.api.collator.FlightsPerPairMinimumCollator;
 import ar.edu.itba.pod.api.combiner.SumCombinerFactory;
 import ar.edu.itba.pod.api.mapper.FlightPerStatePairMapper;
 import ar.edu.itba.pod.api.model.Airport;
@@ -72,7 +72,7 @@ public class FlightsPerStatePairQuery extends Query{
 
     public void mapReduce(){
 
-        JobTracker jobTracker = getHazelcastInstance().getJobTracker("flight-count");
+        JobTracker jobTracker = getHazelcastInstance().getJobTracker("flight-per-state-count");
         final KeyValueSource<String, Flight> source = KeyValueSource.fromList(flightsIList);
         Job<String, Flight> job = jobTracker.newJob(source);
 
@@ -80,7 +80,7 @@ public class FlightsPerStatePairQuery extends Query{
                 .mapper( new FlightPerStatePairMapper() )
                 .combiner( new SumCombinerFactory<>() )
                 .reducer( new CountReducerFactory<>() )
-                .submit( new FlightPerPairMinimumCollator(this.min) );
+                .submit( new FlightsPerPairMinimumCollator(this.min) );
 
         result = null;
         try {

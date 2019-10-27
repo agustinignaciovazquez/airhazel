@@ -5,10 +5,10 @@ import com.hazelcast.mapreduce.Collator;
 
 import java.util.*;
 
-public class FlightPerPairMinimumCollator implements Collator<Map.Entry<Pair<String, String>, Long>, Set<Map.Entry<Pair<String, String>, Long>>> {
+public class FlightsPerPairMinimumCollator implements Collator<Map.Entry<Pair<String, String>, Long>, Set<Map.Entry<Pair<String, String>, Long>>> {
     private Long minimum;
 
-    public FlightPerPairMinimumCollator(Long minimum) {
+    public FlightsPerPairMinimumCollator(Long minimum) {
         this.minimum = minimum;
     }
 

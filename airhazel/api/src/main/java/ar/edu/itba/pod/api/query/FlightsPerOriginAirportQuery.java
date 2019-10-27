@@ -1,6 +1,6 @@
 package ar.edu.itba.pod.api.query;
 
-import ar.edu.itba.pod.api.collator.FlightPerAirportCollator;
+import ar.edu.itba.pod.api.collator.FlightsPerAirportCollator;
 import ar.edu.itba.pod.api.combiner.SumCombinerFactory;
 import ar.edu.itba.pod.api.mapper.FlightTypePerAirportMapper;
 import ar.edu.itba.pod.api.model.Flight;
@@ -21,7 +21,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -76,7 +75,7 @@ public class FlightsPerOriginAirportQuery extends Query {
                 .mapper( new FlightTypePerAirportMapper(FlightType.DEPARTURE, FlightField.DESTINATION_OACI))
                 .combiner( new SumCombinerFactory<>() )
                 .reducer( new CountReducerFactory<>() )
-                .submit( new FlightPerAirportCollator() );
+                .submit( new FlightsPerAirportCollator() );
 
         try {
             result = future.get();

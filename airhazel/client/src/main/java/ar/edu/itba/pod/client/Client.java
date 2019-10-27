@@ -9,13 +9,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Paths;
 
 public class Client {
     private static org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Client.class);
 
-    public static void main(String[] args) throws URISyntaxException {
+    public static void main(String[] args)  {
         LOGGER.info("airhazel client Starting ...");
 
         ClientConfig clientConfig = new ClientConfig();

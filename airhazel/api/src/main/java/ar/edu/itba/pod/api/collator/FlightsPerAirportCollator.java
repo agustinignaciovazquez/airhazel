@@ -4,7 +4,7 @@ import com.hazelcast.mapreduce.Collator;
 
 import java.util.*;
 
-public class FlightPerAirportCollator implements Collator<Map.Entry<String, Long>, Set<Map.Entry<String, Long>>> {
+public class FlightsPerAirportCollator implements Collator<Map.Entry<String, Long>, Set<Map.Entry<String, Long>>> {
     @Override
     public Set<Map.Entry<String, Long>> collate(Iterable<Map.Entry<String, Long>> values) {
         Set<Map.Entry<String, Long>> result = new TreeSet<>((o1, o2) -> {
