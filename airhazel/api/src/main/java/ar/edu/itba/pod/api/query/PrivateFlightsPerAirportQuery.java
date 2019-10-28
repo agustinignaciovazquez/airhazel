@@ -37,7 +37,7 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 public class PrivateFlightsPerAirportQuery extends Query {
-    private MultiMap<String, Flight> flightsMultiMap;
+    private IList<Flight> flightsIList;
     private int n;
     private Set<Map.Entry<String, Double>> result;
 
@@ -61,18 +61,17 @@ public class PrivateFlightsPerAirportQuery extends Query {
             System.exit(1);
         }
 
-        flightsMultiMap = getHazelcastInstance().getMultiMap("flights");
+        flightsIList = getHazelcastInstance().getList("flights");
 
         FlightImporter flightImporter = new FlightImporter();
-        flightImporter.importToMultiMap(flightsMultiMap, flights, FlightField.FLIGHT_CLASS);
+        flightImporter.importToIList(flightsIList, flights);
     }
 
     public void mapReduce(){
         JobTracker jobTracker = getHazelcastInstance().getJobTracker("private-flight-per-airport-count");
-        final KeyValueSource<String, Flight> source = KeyValueSource.fromMultiMap(flightsMultiMap);
+        final KeyValueSource<String, Flight> source = KeyValueSource.fromList(flightsIList);
         Job<String, Flight> job = jobTracker.newJob(source);
 
-        List<String> StringList = Arrays.asList(FlightClass.PRIVATE_NATIONAL.getName(),FlightClass.PRIVATE_INTERNATIONAL.getName());
         ICompletableFuture<Set<Map.Entry<String, Double>>> future = job
                 .mapper( new PrivateFlightPerAirportMapper())
                 .combiner( new PrivateFlightCombinerFactory<>())

@@ -9,7 +9,6 @@ import com.hazelcast.mapreduce.Mapper;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 public class PrivateFlightPerAirportMapper implements Mapper<String, Flight, String, Boolean>{
 
