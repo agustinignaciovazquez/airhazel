@@ -45,7 +45,7 @@ public class Client {
                 query = new FlightsPerOriginAirportQuery(hazelcastInstance,airportsFile,flightsFile, p.getOaci(), p.getN());
                 break;
             case "5":
-
+                query = new PrivateFlightsPerAirportQuery(hazelcastInstance,airportsFile,flightsFile,p.getN());
                 break;
             case "6":
                 query = new FlightsPerStatePairQuery(hazelcastInstance,airportsFile,flightsFile,p.getMin());
