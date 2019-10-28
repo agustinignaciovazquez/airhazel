@@ -1,7 +1,12 @@
 package ar.edu.itba.pod.api.model.enums;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public enum FlightType {
     DEPARTURE, LANDING;
+
+    private static Logger LOGGER = LoggerFactory.getLogger(FlightType.class);
 
     public static FlightType fromSpanishString(final String str) {
         String uppercase = str.toUpperCase();
@@ -11,6 +16,7 @@ public enum FlightType {
             case "ATERRIZAJE":
                 return FlightType.LANDING;
             default:
+                LOGGER.debug("FlightType arg: {}", str);
                 throw new IllegalArgumentException();
         }
     }

@@ -28,6 +28,7 @@ public class PercentageFlightCollator implements Collator<Map.Entry<String, Doub
         for (Map.Entry<String, Double> value : values) {
             result.add(value);
         }
+
         return result.stream().limit(n).collect(Collectors.toSet());
     }
 }

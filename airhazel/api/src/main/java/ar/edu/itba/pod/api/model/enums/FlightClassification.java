@@ -1,7 +1,12 @@
 package ar.edu.itba.pod.api.model.enums;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public enum FlightClassification {
     CABOTAGE, INTERNATIONAL, NOT_AVAILABLE;
+
+    private static Logger LOGGER = LoggerFactory.getLogger(FlightClassification.class);
 
     public static FlightClassification fromSpanishString(final String str) {
         String uppercase = str.toUpperCase();
@@ -13,6 +18,7 @@ public enum FlightClassification {
             case "N/A":
                 return FlightClassification.NOT_AVAILABLE;
             default:
+                LOGGER.debug("FlightClassification arg: {}", str);
                 throw new IllegalArgumentException();
         }
     }

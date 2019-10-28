@@ -2,10 +2,10 @@ package ar.edu.itba.pod.client;
 
 public class Parameters {
 
-    private String query = System.getProperty("query", "1");
-    private String flightsInPath = System.getProperty("flightsInPath", "movimientos.csv");
-    private String airportsInPath = System.getProperty("airportsInPath", "aeropuertos.csv");
-    private String outPath = System.getProperty("outPath", "query.csv");
+    private String query = System.getProperty("query", "2");
+    private String flightsInPath = System.getProperty("flightsInPath", "/Users/agustinvazquez/Downloads/pod/movimientos.csv");
+    private String airportsInPath = System.getProperty("airportsInPath", "/Users/agustinvazquez/Downloads/pod/aeropuertos.csv");
+    private String outPath = System.getProperty("outPath", "query5.csv");
     private String timeOutPath = System.getProperty("timeOutPath", "time.txt");
     private String oaci = System.getProperty("oaci", "SAEZ");
     private String n = System.getProperty("n", "5");

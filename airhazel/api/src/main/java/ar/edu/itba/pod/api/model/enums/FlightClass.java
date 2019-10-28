@@ -1,7 +1,12 @@
 package ar.edu.itba.pod.api.model.enums;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public enum FlightClass {
     NOT_REGULAR, REGULAR, PRIVATE_INTERNATIONAL, PRIVATE_NATIONAL;
+
+    private static Logger LOGGER = LoggerFactory.getLogger(FlightClass.class);
 
     public static FlightClass fromSpanishString(final String str) {
         String uppercase = str.toUpperCase();
@@ -15,6 +20,7 @@ public enum FlightClass {
             case "VUELO PRIVADO CON MATRÍCULA NACIONAL":
                 return FlightClass.PRIVATE_NATIONAL;
             default:
+                LOGGER.debug("FlightClass arg: {}", str);
                 throw new IllegalArgumentException();
         }
     }

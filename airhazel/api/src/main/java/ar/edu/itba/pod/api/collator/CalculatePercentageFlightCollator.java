@@ -24,7 +24,7 @@ public class CalculatePercentageFlightCollator implements Collator<Map.Entry<Str
         Long totalAirlines = getTotalFromKey(values);
         Set<Map.Entry<String, Double>> result = new TreeSet<>((o1, o2) -> {
             if (!o1.getValue().equals(o2.getValue())){
-                return (o1.getValue().compareTo(o2.getValue()));
+                return (o2.getValue().compareTo(o1.getValue()));
             }
             return o1.getKey().compareTo(o2.getKey());
         });

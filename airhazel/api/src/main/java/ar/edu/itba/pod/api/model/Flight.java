@@ -9,6 +9,7 @@ import com.hazelcast.nio.serialization.DataSerializable;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Flight implements DataSerializable {
@@ -26,21 +27,27 @@ public class Flight implements DataSerializable {
 
     public Flight(FlightClassification flightClassification, FlightClass flightClass,
                   FlightType flightType, String originOaci, String destinationOaci, String airlineName) {
+        if(flightClass == null || flightClassification == null || flightType == null){
+            throw new IllegalArgumentException();
+        }
         this.id = count.incrementAndGet();
         this.flightClassification = flightClassification;
         this.flightClass = flightClass;
         this.flightType = flightType;
-        this.originOaci = originOaci;
-        this.destinationOaci = destinationOaci;
-        this.airlineName = airlineName;
+        this.originOaci = Optional.ofNullable(originOaci).orElse("N/A");
+        this.destinationOaci = Optional.ofNullable(destinationOaci).orElse("N/A");
+        this.airlineName = Optional.ofNullable(airlineName).orElse("");
+
     }
 
     public Flight(String flightClassification, String flightClass,
                   String flightType, String originOaci, String destinationOaci,String airlineName) {
+
         this(FlightClassification.fromString(flightClassification),
                 FlightClass.fromString(flightClass),
                 FlightType.fromString(flightType),
                 originOaci,destinationOaci,airlineName);
+
     }
 
     public Integer getId() {
@@ -103,6 +110,7 @@ public class Flight implements DataSerializable {
         objectDataOutput.writeUTF(this.flightType.getName());
         objectDataOutput.writeUTF(this.originOaci);
         objectDataOutput.writeUTF(this.destinationOaci);
+        objectDataOutput.writeUTF(this.airlineName);
     }
 
     @Override
@@ -113,6 +121,7 @@ public class Flight implements DataSerializable {
         this.flightType = FlightType.fromString(objectDataInput.readUTF());
         this.originOaci = objectDataInput.readUTF();
         this.destinationOaci = objectDataInput.readUTF();
+        this.airlineName = objectDataInput.readUTF();
     }
 
     @Override

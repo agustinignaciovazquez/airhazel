@@ -21,7 +21,7 @@ public class FlightsCollator implements Collator<Map.Entry<String, Long>, Set<Ma
         Set<Map.Entry<String, Long>> result = new TreeSet<>((o1, o2) -> {
             //Descendant by quantity of flights
             if (!o1.getValue().equals(o2.getValue())){
-                return (o1.getValue().compareTo(o2.getValue()));
+                return (o2.getValue().compareTo(o1.getValue()));
             }
             return o1.getKey().compareTo(o2.getKey());
         });

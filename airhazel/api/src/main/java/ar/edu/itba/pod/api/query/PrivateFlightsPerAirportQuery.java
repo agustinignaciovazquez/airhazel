@@ -2,9 +2,8 @@ package ar.edu.itba.pod.api.query;
 
 import ar.edu.itba.pod.api.collator.PercentageFlightCollator;
 import ar.edu.itba.pod.api.combiner.FlightPredicateCombinerFactory;
-import ar.edu.itba.pod.api.mapper.FlightPredicatePerAirportMapper;
+import ar.edu.itba.pod.api.mapper.PrivateFlightPerAirportMapper;
 import ar.edu.itba.pod.api.model.Flight;
-import ar.edu.itba.pod.api.model.enums.FlightClass;
 import ar.edu.itba.pod.api.reducer.PercentageFlightReducerFactory;
 import ar.edu.itba.pod.api.util.FileReader;
 import ar.edu.itba.pod.api.util.FlightImporter;
@@ -61,10 +60,7 @@ public class PrivateFlightsPerAirportQuery extends Query {
         Job<String, Flight> job = jobTracker.newJob(source);
 
         ICompletableFuture<Set<Map.Entry<String, Double>>> future = job
-                .mapper( new FlightPredicatePerAirportMapper((flight -> {
-                    List<FlightClass> flightClasses = Arrays.asList(FlightClass.PRIVATE_INTERNATIONAL,FlightClass.PRIVATE_NATIONAL);
-                    return flightClasses.stream().anyMatch(fc -> fc == flight.getFlightClass());
-                })))
+                .mapper( new PrivateFlightPerAirportMapper())
                 .combiner( new FlightPredicateCombinerFactory<>())
                 .reducer(new PercentageFlightReducerFactory())
                 .submit(new PercentageFlightCollator(n));

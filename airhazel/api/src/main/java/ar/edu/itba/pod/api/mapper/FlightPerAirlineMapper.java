@@ -1,7 +1,6 @@
 package ar.edu.itba.pod.api.mapper;
 
 import ar.edu.itba.pod.api.model.Flight;
-import ar.edu.itba.pod.api.model.predicates.FlightPredicate;
 import ar.edu.itba.pod.api.util.Constants;
 import com.hazelcast.mapreduce.Context;
 import com.hazelcast.mapreduce.Mapper;

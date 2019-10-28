@@ -6,12 +6,25 @@ import com.hazelcast.core.IList;
 import com.hazelcast.core.IMap;
 import com.hazelcast.core.MultiMap;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class FlightImporter implements Importer<Flight> {
     @Override
     public void importToIList(IList<Flight> iList, Collection<Flight> collection) {
-        iList.addAll(collection);
+        int LIMIT = 1000;
+        List<Flight> list = new ArrayList<>();
+
+        for (Flight m : collection){
+            list.add(m);
+            if (list.size() == LIMIT){
+                iList.addAll(list);
+                list.clear();
+            }
+        }
+
+        iList.addAll(list);
     }
 
     @Override

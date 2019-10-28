@@ -9,7 +9,7 @@ public class Server {
     private static Logger logger = LoggerFactory.getLogger(Server.class);
 
     public static void main(String[] args) {
-        logger.info("tpe-hazelcast Server Starting ...");
+        logger.info("airhazel Server Starting ...");
 
         HazelcastInstance instance = Hazelcast.newHazelcastInstance();
     }
