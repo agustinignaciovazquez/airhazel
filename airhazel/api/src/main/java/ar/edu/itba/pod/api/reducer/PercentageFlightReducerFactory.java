@@ -6,7 +6,7 @@ import com.hazelcast.mapreduce.ReducerFactory;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class PrivateFlightReducerFactory implements ReducerFactory<String, Pair<Long, Long>, Double> {
+public class PercentageFlightReducerFactory implements ReducerFactory<String, Pair<Long, Long>, Double> {
 
     @Override
     public Reducer<Pair<Long, Long>, Double> newReducer(String pair) {

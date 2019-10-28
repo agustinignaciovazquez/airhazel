@@ -5,14 +5,14 @@ import com.hazelcast.mapreduce.Collator;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class FlightsPerAirportCollator implements Collator<Map.Entry<String, Long>, Set<Map.Entry<String, Long>>> {
+public class FlightsCollator implements Collator<Map.Entry<String, Long>, Set<Map.Entry<String, Long>>> {
     private Integer n;
 
-    public FlightsPerAirportCollator(int n) {
+    public FlightsCollator(int n) {
         this.n = n;
     }
 
-    public FlightsPerAirportCollator(){
+    public FlightsCollator(){
         this.n = null;
     }
 

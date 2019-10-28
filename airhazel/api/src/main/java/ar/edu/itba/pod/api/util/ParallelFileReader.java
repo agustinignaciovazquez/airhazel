@@ -23,7 +23,7 @@ public class ParallelFileReader implements FileReader {
     public Collection<Flight> readFlights(File movementsFile) throws IOException {
         return Files.readAllLines(movementsFile.toPath(), Charset.forName("iso-8859-1")).parallelStream().skip(1)
                 .map(line -> line.split(";"))
-                .map(val -> new Flight(val[3], val[2],val[4], val[5], val[6]))
+                .map(val -> new Flight(val[3], val[2],val[4], val[5], val[6], val[7]))
                 .collect(Collectors.toList());
     }
 }

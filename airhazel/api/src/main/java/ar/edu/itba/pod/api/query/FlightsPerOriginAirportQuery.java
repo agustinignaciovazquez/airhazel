@@ -1,6 +1,6 @@
 package ar.edu.itba.pod.api.query;
 
-import ar.edu.itba.pod.api.collator.FlightsPerAirportCollator;
+import ar.edu.itba.pod.api.collator.FlightsCollator;
 import ar.edu.itba.pod.api.combiner.SumCombinerFactory;
 import ar.edu.itba.pod.api.mapper.FlightTypePerAirportMapper;
 import ar.edu.itba.pod.api.model.Flight;
@@ -75,7 +75,7 @@ public class FlightsPerOriginAirportQuery extends Query {
                 .mapper( new FlightTypePerAirportMapper(FlightType.DEPARTURE, FlightField.DESTINATION_OACI))
                 .combiner( new SumCombinerFactory<>() )
                 .reducer( new CountReducerFactory<>() )
-                .submit( new FlightsPerAirportCollator(n) );
+                .submit( new FlightsCollator(n) );
 
         try {
             result = future.get();

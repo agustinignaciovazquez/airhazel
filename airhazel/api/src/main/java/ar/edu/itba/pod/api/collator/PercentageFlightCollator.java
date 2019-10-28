@@ -8,11 +8,11 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-public class PrivateFlightPerAirportCollator implements Collator<Map.Entry<String, Double>, Set<Map.Entry<String, Double>>> {
+public class PercentageFlightCollator implements Collator<Map.Entry<String, Double>, Set<Map.Entry<String, Double>>> {
 
     private int n;
 
-    public PrivateFlightPerAirportCollator(int n) {
+    public PercentageFlightCollator(int n) {
         this.n = n;
     }
 

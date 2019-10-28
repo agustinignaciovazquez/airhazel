@@ -1,23 +1,11 @@
 package ar.edu.itba.pod.api.query;
 
-import ar.edu.itba.pod.api.collator.FlightsPerAirportCollator;
-import ar.edu.itba.pod.api.collator.PrivateFlightPerAirportCollator;
-import ar.edu.itba.pod.api.combiner.PrivateFlightCombinerFactory;
-import ar.edu.itba.pod.api.combiner.SumCombinerFactory;
-import ar.edu.itba.pod.api.mapper.FlightPerAirportMapper;
-import ar.edu.itba.pod.api.mapper.FlightTypePerAirportMapper;
-import ar.edu.itba.pod.api.mapper.PrivateFlightPerAirportMapper;
-import ar.edu.itba.pod.api.model.Airport;
+import ar.edu.itba.pod.api.collator.PercentageFlightCollator;
+import ar.edu.itba.pod.api.combiner.FlightPredicateCombinerFactory;
+import ar.edu.itba.pod.api.mapper.FlightPredicatePerAirportMapper;
 import ar.edu.itba.pod.api.model.Flight;
 import ar.edu.itba.pod.api.model.enums.FlightClass;
-import ar.edu.itba.pod.api.model.enums.FlightType;
-import ar.edu.itba.pod.api.model.enums.field.AirportField;
-import ar.edu.itba.pod.api.model.enums.field.FlightField;
-import ar.edu.itba.pod.api.predicates.KeyStringListPredicate;
-import ar.edu.itba.pod.api.predicates.KeyStringPredicate;
-import ar.edu.itba.pod.api.reducer.CountReducerFactory;
-import ar.edu.itba.pod.api.reducer.PrivateFlightReducerFactory;
-import ar.edu.itba.pod.api.util.AirportImporter;
+import ar.edu.itba.pod.api.reducer.PercentageFlightReducerFactory;
 import ar.edu.itba.pod.api.util.FileReader;
 import ar.edu.itba.pod.api.util.FlightImporter;
 import ar.edu.itba.pod.api.util.ParallelFileReader;
@@ -73,10 +61,13 @@ public class PrivateFlightsPerAirportQuery extends Query {
         Job<String, Flight> job = jobTracker.newJob(source);
 
         ICompletableFuture<Set<Map.Entry<String, Double>>> future = job
-                .mapper( new PrivateFlightPerAirportMapper())
-                .combiner( new PrivateFlightCombinerFactory<>())
-                .reducer(new PrivateFlightReducerFactory())
-                .submit(new PrivateFlightPerAirportCollator(n));
+                .mapper( new FlightPredicatePerAirportMapper((flight -> {
+                    List<FlightClass> flightClasses = Arrays.asList(FlightClass.PRIVATE_INTERNATIONAL,FlightClass.PRIVATE_NATIONAL);
+                    return flightClasses.stream().anyMatch(fc -> fc == flight.getFlightClass());
+                })))
+                .combiner( new FlightPredicateCombinerFactory<>())
+                .reducer(new PercentageFlightReducerFactory())
+                .submit(new PercentageFlightCollator(n));
         try {
             result = future.get();
         } catch (ExecutionException | InterruptedException e) {

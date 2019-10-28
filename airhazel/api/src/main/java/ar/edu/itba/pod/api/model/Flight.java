@@ -20,25 +20,27 @@ public class Flight implements DataSerializable {
     private FlightType flightType;
     private String originOaci;
     private String destinationOaci;
+    private String airlineName;
 
     public Flight(){}
 
     public Flight(FlightClassification flightClassification, FlightClass flightClass,
-                  FlightType flightType, String originOaci, String destinationOaci) {
+                  FlightType flightType, String originOaci, String destinationOaci, String airlineName) {
         this.id = count.incrementAndGet();
         this.flightClassification = flightClassification;
         this.flightClass = flightClass;
         this.flightType = flightType;
         this.originOaci = originOaci;
         this.destinationOaci = destinationOaci;
+        this.airlineName = airlineName;
     }
 
     public Flight(String flightClassification, String flightClass,
-                  String flightType, String originOaci, String destinationOaci) {
+                  String flightType, String originOaci, String destinationOaci,String airlineName) {
         this(FlightClassification.fromString(flightClassification),
                 FlightClass.fromString(flightClass),
                 FlightType.fromString(flightType),
-                originOaci,destinationOaci);
+                originOaci,destinationOaci,airlineName);
     }
 
     public Integer getId() {
@@ -65,6 +67,10 @@ public class Flight implements DataSerializable {
         return destinationOaci;
     }
 
+    public String getAirlineName() {
+        return airlineName;
+    }
+
     public String getField(Field field) {
         if(!(field instanceof FlightField))
             throw new IllegalArgumentException();
@@ -81,6 +87,8 @@ public class Flight implements DataSerializable {
                 return this.getOriginOaci();
             case DESTINATION_OACI:
                 return this.getDestinationOaci();
+            case AIRLINE_NAME:
+                return this.getAirlineName();
         }
 
         throw new IllegalArgumentException();

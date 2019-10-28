@@ -19,7 +19,7 @@ public class Client {
 
         ClientConfig clientConfig = new ClientConfig();
         ClientNetworkConfig networkConfig = clientConfig.getNetworkConfig();
-        clientConfig.getGroupConfig().setName("54393-56399-55382").setPassword("asdasd");
+        clientConfig.getGroupConfig().setName("g13-tp2").setPassword("123456aa");
 
         Parameters p = new Parameters();
         networkConfig.addAddress(p.getAddresses().split(","));
@@ -36,7 +36,7 @@ public class Client {
                 query = new FlightsPerAirportQuery(hazelcastInstance, airportsFile, flightsFile);
                 break;
             case "2":
-
+                query = new CabotageFlightsPerAirlineQuery(hazelcastInstance,airportsFile,flightsFile,p.getN());
                 break;
             case "3":
 
