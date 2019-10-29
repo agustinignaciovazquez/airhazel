@@ -19,10 +19,15 @@ import java.util.Optional;
 public class PrivateFlightPerAirportMapper implements Mapper<String, Flight, String, Boolean>, HazelcastInstanceAware {
 
     private transient HazelcastInstance instance;
+    private final String randomString;
+
+    public PrivateFlightPerAirportMapper(String randomString) {
+        this.randomString = randomString;
+    }
 
     @Override
     public void map(String s, Flight flight, Context<String, Boolean> context) {
-        IMap<String, Airport> airports = instance.getMap("airports");
+        IMap<String, Airport> airports = instance.getMap("g13-airports-"+randomString);
         Boolean isPrivate = isPrivateFlight(flight);
         EmitIfAirportIsPresent(airports, flight, FlightField.ORIGIN_OACI,isPrivate,context);
         EmitIfAirportIsPresent(airports, flight, FlightField.DESTINATION_OACI,isPrivate,context);

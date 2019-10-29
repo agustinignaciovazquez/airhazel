@@ -15,6 +15,7 @@ import com.hazelcast.core.*;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,15 +31,16 @@ import java.util.concurrent.ExecutionException;
 public class PrivateFlightsPerAirportQuery extends Query {
     private IList<Flight> flightsIList;
     private IMap<String, Airport> airportIMap;
-    private int n;
+    private final int n;
     private List<Map.Entry<String, Double>> result;
-
+    private final String randomString;
     private static Logger LOGGER = LoggerFactory.getLogger(PrivateFlightsPerAirportQuery.class);
 
     public PrivateFlightsPerAirportQuery(HazelcastInstance hazelcastInstance, File airportsFile,
                                         File flightsFile, int n) {
         super(hazelcastInstance, airportsFile, flightsFile);
         this.n = n;
+        this.randomString = RandomStringUtils.random(10, true, true);
     }
 
     @Override
@@ -55,8 +57,8 @@ public class PrivateFlightsPerAirportQuery extends Query {
             System.exit(1);
         }
 
-        flightsIList = getHazelcastInstance().getList("flights");
-        airportIMap = getHazelcastInstance().getMap("airports");
+        flightsIList = getHazelcastInstance().getList("g13-flights-"+randomString);
+        airportIMap = getHazelcastInstance().getMap("g13-airports-"+randomString);
 
         FlightImporter flightImporter = new FlightImporter();
         flightImporter.importToIList(flightsIList, flights);
@@ -70,7 +72,7 @@ public class PrivateFlightsPerAirportQuery extends Query {
         Job<String, Flight> job = jobTracker.newJob(source);
 
         ICompletableFuture<List<Map.Entry<String, Double>>> future = job
-                .mapper( new PrivateFlightPerAirportMapper())
+                .mapper( new PrivateFlightPerAirportMapper(randomString))
                 .combiner( new FlightPredicateCombinerFactory<>())
                 .reducer(new PercentageFlightReducerFactory())
                 .submit(new PercentageFlightCollator(n));
@@ -93,8 +95,9 @@ public class PrivateFlightsPerAirportQuery extends Query {
                 String out = oaci + ";" + dc.format(e.getValue()) + "%\n";
                 Files.write(path, out.getBytes(), StandardOpenOption.APPEND);
             }
-            //airportIMap.clear();
-            //flightsIList.clear();
+            /* Clear hazelcast collections */
+            airportIMap.clear();
+            flightsIList.clear();
         } catch (IOException e) {
             LOGGER.error("Error writing to out file");
         }

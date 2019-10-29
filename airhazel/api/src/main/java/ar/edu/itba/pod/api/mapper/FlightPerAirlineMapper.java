@@ -10,7 +10,7 @@ public class FlightPerAirlineMapper implements Mapper<String, Flight, String, Lo
     @Override
     public void map(String s, Flight flight, Context<String, Long> context) {
         if(flight.getAirlineName().isEmpty() || flight.getAirlineName().equals("N/A"))
-            context.emit(OTHERS_AIRLINE_COUNT, 1L);
+            context.emit(NO_NAME_AIRLINE_COUNT, 1L);
         else
             context.emit(flight.getAirlineName(), 1L);
         context.emit(TOTAL_AIRLINE_COUNT,1L);

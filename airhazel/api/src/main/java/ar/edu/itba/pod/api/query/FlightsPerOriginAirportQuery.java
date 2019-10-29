@@ -29,6 +29,7 @@ import java.util.concurrent.ExecutionException;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +38,7 @@ public class FlightsPerOriginAirportQuery extends Query {
     private String originOaci;
     private int n;
     private List<Map.Entry<String, Long>> result;
-
+    private final String randomString;
     private static Logger LOGGER = LoggerFactory.getLogger(FlightsPerOriginAirportQuery.class);
 
     public FlightsPerOriginAirportQuery(HazelcastInstance hazelcastInstance, File airportsFile,
@@ -45,6 +46,7 @@ public class FlightsPerOriginAirportQuery extends Query {
         super(hazelcastInstance, airportsFile, flightsFile);
         this.originOaci = originOaci;
         this.n = n;
+        this.randomString = RandomStringUtils.random(10, true, true);
     }
 
     @Override
@@ -59,7 +61,7 @@ public class FlightsPerOriginAirportQuery extends Query {
             System.exit(1);
         }
 
-        flightsMultiMap = getHazelcastInstance().getMultiMap("flights");
+        flightsMultiMap = getHazelcastInstance().getMultiMap("g13-flights-"+randomString);
 
         FlightImporter flightImporter = new FlightImporter();
         flightImporter.importToMultiMap(flightsMultiMap, flights, FlightField.ORIGIN_OACI);
@@ -96,7 +98,8 @@ public class FlightsPerOriginAirportQuery extends Query {
                 String out = oaci + ";" + e.getValue() + "\n";
                 Files.write(path, out.getBytes(), StandardOpenOption.APPEND);
             }
-            //flightsMultiMap.clear();
+            /* Clear hazelcast collections */
+            flightsMultiMap.clear();
         } catch (IOException e) {
             e.printStackTrace();
             LOGGER.error("I/O Exception while writing output logs");

@@ -8,6 +8,7 @@ import ar.edu.itba.pod.api.model.enums.FlightClassification;
 import ar.edu.itba.pod.api.model.enums.field.FlightField;
 import ar.edu.itba.pod.api.predicates.KeyStringPredicate;
 import ar.edu.itba.pod.api.reducer.CountReducerFactory;
+import ar.edu.itba.pod.api.util.Constants;
 import ar.edu.itba.pod.api.util.FileReader;
 import ar.edu.itba.pod.api.util.FlightImporter;
 import ar.edu.itba.pod.api.util.ParallelFileReader;
@@ -17,6 +18,7 @@ import com.hazelcast.core.MultiMap;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,17 +31,18 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
-public class CabotageFlightsPerAirlineQuery extends Query{
+public class CabotageFlightsPerAirlineQuery extends Query implements Constants {
     private MultiMap<String, Flight> flightsMultiMap;
-        private int n;
+        private final int n;
         private List<Map.Entry<String, Double>> result;
-
+        private final String randomString;
         private static Logger LOGGER = LoggerFactory.getLogger(FlightsPerOriginAirportQuery.class);
 
         public CabotageFlightsPerAirlineQuery(HazelcastInstance hazelcastInstance, File airportsFile,
                                               File flightsFile, int n) {
             super(hazelcastInstance, airportsFile, flightsFile);
             this.n = n;
+            this.randomString = RandomStringUtils.random(10, true, true);
         }
 
         @Override
@@ -54,7 +57,8 @@ public class CabotageFlightsPerAirlineQuery extends Query{
                 System.exit(1);
             }
 
-            flightsMultiMap = getHazelcastInstance().getMultiMap("flights");
+
+            flightsMultiMap = getHazelcastInstance().getMultiMap("g13-flights-"+randomString);
 
             FlightImporter flightImporter = new FlightImporter();
             flightImporter.importToMultiMap(flightsMultiMap, flights, FlightField.FLIGHT_CLASSIFICATION);
@@ -65,9 +69,9 @@ public class CabotageFlightsPerAirlineQuery extends Query{
         JobTracker jobTracker = getHazelcastInstance().getJobTracker("airline-flight-airport-count");
         final KeyValueSource<String, Flight> source = KeyValueSource.fromMultiMap(flightsMultiMap);
         Job<String, Flight> job = jobTracker.newJob(source);
-        //List<String> keys = Arrays.asList(FlightClassification.CABOTAGE.getName(),FlightClassification.NOT_AVAILABLE.getName());
+        /*List<String> keys = Arrays.asList(FlightClassification.CABOTAGE.getName(),FlightClassification.NOT_AVAILABLE.getName()); */
         ICompletableFuture<List<Map.Entry<String, Double>>> future = job
-                //.keyPredicate( new KeyStringListPredicate(keys))
+                /*.keyPredicate( new KeyStringListPredicate(keys))*/
                 .keyPredicate( new KeyStringPredicate(FlightClassification.CABOTAGE.getName()))
                 .mapper(new FlightPerAirlineMapper())
                 .combiner(new SumCombinerFactory<>())
@@ -89,15 +93,22 @@ public class CabotageFlightsPerAirlineQuery extends Query{
         try {
             Files.write(path, header.getBytes());
             DecimalFormat dc = new DecimalFormat("#.##");
-            Map.Entry<String, Double> others = null;
+            Double sum_percentage = 0.0;
             for (Map.Entry<String, Double> e : result) {
-
-                String airline = e.getKey();
-                String out = airline + ";" + dc.format(e.getValue()) + "%\n";
-                Files.write(path, out.getBytes(), StandardOpenOption.APPEND);
+                /* Segun el resultado provisto por la catedra el valor de Otros
+                es la suma de los vacios y N/A y los no mostrados en el limit N */
+                if(!NO_NAME_AIRLINE_COUNT.equals(e.getKey())) {
+                    String airline = e.getKey();
+                    String out = airline + ";" + dc.format(e.getValue()) + "%\n";
+                    Files.write(path, out.getBytes(), StandardOpenOption.APPEND);
+                    sum_percentage += e.getValue();
+                }
             }
-            //flightsMultiMap.clear();
-
+            /* Write others percentage */
+            String out = "Otros;" + dc.format(100.0 - sum_percentage) + "%\n";
+            Files.write(path, out.getBytes(), StandardOpenOption.APPEND);
+            /* Clear hazelcast list */
+            flightsMultiMap.clear();
         } catch (IOException e) {
             LOGGER.error("Error writing to out file");
         }

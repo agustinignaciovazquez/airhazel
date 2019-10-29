@@ -18,6 +18,7 @@ import com.hazelcast.core.IMap;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -35,11 +36,12 @@ public class FlightsPerAirportQuery extends Query {
     private IList<Flight> flightsIList;
     private IMap<String, Airport> airportIMap;
     private List<Map.Entry<String, Long>> result;
-
+    private final String randomString;
     private static org.slf4j.Logger LOGGER = LoggerFactory.getLogger(FlightsPerAirportQuery.class);
 
     public FlightsPerAirportQuery(HazelcastInstance hazelcastInstance, File airportsFile, File flightsFile) {
         super(hazelcastInstance, airportsFile, flightsFile);
+        this.randomString = RandomStringUtils.random(10, true, true);
     }
 
     public void readFiles(){
@@ -58,8 +60,8 @@ public class FlightsPerAirportQuery extends Query {
             System.exit(1);
         }
 
-        flightsIList = getHazelcastInstance().getList("flights");
-        airportIMap = getHazelcastInstance().getMap("airports");
+        flightsIList = getHazelcastInstance().getList("g13-flights-"+randomString);
+        airportIMap = getHazelcastInstance().getMap("g13-airports-"+randomString);
 
         FlightImporter flightsImporter = new FlightImporter();
         AirportImporter airportImporter = new AirportImporter();
@@ -75,7 +77,7 @@ public class FlightsPerAirportQuery extends Query {
         Job<String, Flight> job = jobTracker.newJob(source);
 
         ICompletableFuture<List<Map.Entry<String, Long>>> future = job
-                .mapper( new FlightPerAirportMapper() )
+                .mapper( new FlightPerAirportMapper(randomString) )
                 .combiner( new SumCombinerFactory<>() )
                 .reducer( new CountReducerFactory<>() )
                 .submit( new FlightsCollator() );
@@ -101,8 +103,9 @@ public class FlightsPerAirportQuery extends Query {
                 String out = oaci + ";" + airportIMap.get(oaci).getAirportName() + ";" + e.getValue() + "\n";
                 Files.write(path, out.getBytes(), StandardOpenOption.APPEND);
             }
-            //flightsIList.clear();
-            //airportIMap.clear();
+            /* Clear hazelcast collections */
+            flightsIList.clear();
+            airportIMap.clear();
         } catch (IOException e) {
             e.printStackTrace();
             LOGGER.error("I/O Exception while writing output logs");

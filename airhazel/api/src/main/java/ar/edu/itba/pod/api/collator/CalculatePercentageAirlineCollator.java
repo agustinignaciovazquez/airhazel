@@ -29,19 +29,20 @@ public class CalculatePercentageAirlineCollator implements Collator<Map.Entry<St
         Optional<Map.Entry<String,Double>> others = Optional.empty();
         for (Map.Entry<String, Long> value : values) {
             if(!TOTAL_AIRLINE_COUNT.equals(value.getKey())) {
-                Map.Entry<String,Double> entry =new MapEntrySimple<>(value.getKey(), 100.0 * value.getValue()/totalAirlines);
+                Map.Entry<String,Double> entry = new MapEntrySimple<>(value.getKey(), 100.0 * value.getValue()/totalAirlines);
+                result.add(entry);
+
                 //Ignore others value so its not sorted
-                if(!OTHERS_AIRLINE_COUNT.equals(entry.getKey())){
+                if(!NO_NAME_AIRLINE_COUNT.equals(entry.getKey())){
                     result.add(entry);
                 }else{
                     //Store the others entry for further use
-                    others = Optional.ofNullable(entry);
+                    others = Optional.of(entry);
                 }
             }
 
         }
-
-        List<Map.Entry<String, Double>> r = result.stream().limit(n).collect(Collectors.toList());
+        List<Map.Entry<String, Double>> r = result.stream().limit(n+1).collect(Collectors.toList());
         others.ifPresent(r::add);
         return r;
     }

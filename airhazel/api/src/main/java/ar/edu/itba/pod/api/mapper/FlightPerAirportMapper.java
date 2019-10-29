@@ -17,12 +17,16 @@ import java.util.Optional;
 
 public class FlightPerAirportMapper implements Mapper<String, Flight, String, Long>, HazelcastInstanceAware {
     private transient HazelcastInstance instance;
-
+    private final String randomString;
     private static Logger LOGGER = LoggerFactory.getLogger(FlightPerAirportMapper.class);
+
+    public FlightPerAirportMapper(String randomString) {
+        this.randomString = randomString;
+    }
 
     @Override
     public void map(String s, Flight flight, Context<String ,Long> context) {
-        IMap<String, Airport> airports = instance.getMap("airports");
+        IMap<String, Airport> airports = instance.getMap("g13-airports-"+randomString);
         switch (flight.getFlightType()){
             case DEPARTURE:
                 EmitIfAirportIsPresent(airports, flight, FlightField.ORIGIN_OACI,context);
