@@ -3,8 +3,11 @@ package ar.edu.itba.pod.api.query;
 import ar.edu.itba.pod.api.collator.PercentageFlightCollator;
 import ar.edu.itba.pod.api.combiner.FlightPredicateCombinerFactory;
 import ar.edu.itba.pod.api.mapper.PrivateFlightPerAirportMapper;
+import ar.edu.itba.pod.api.model.Airport;
 import ar.edu.itba.pod.api.model.Flight;
+import ar.edu.itba.pod.api.model.enums.field.AirportField;
 import ar.edu.itba.pod.api.reducer.PercentageFlightReducerFactory;
+import ar.edu.itba.pod.api.util.AirportImporter;
 import ar.edu.itba.pod.api.util.FileReader;
 import ar.edu.itba.pod.api.util.FlightImporter;
 import ar.edu.itba.pod.api.util.ParallelFileReader;
@@ -25,8 +28,9 @@ import java.util.concurrent.ExecutionException;
 
 public class PrivateFlightsPerAirportQuery extends Query {
     private IList<Flight> flightsIList;
+    private IMap<String, Airport> airportIMap;
     private int n;
-    private Set<Map.Entry<String, Double>> result;
+    private List<Map.Entry<String, Double>> result;
 
     private static Logger LOGGER = LoggerFactory.getLogger(PrivateFlightsPerAirportQuery.class);
 
@@ -40,8 +44,10 @@ public class PrivateFlightsPerAirportQuery extends Query {
     public void readFiles() {
         FileReader fileReader = new ParallelFileReader();
 
+        Collection<Airport> airports = null;
         Collection<Flight> flights = null;
         try {
+            airports = fileReader.readAirports(getAirportsFile());
             flights = fileReader.readFlights(getFlightsFile());
         } catch (IOException e) {
             LOGGER.error("I/O Exception while reading input files");
@@ -49,9 +55,12 @@ public class PrivateFlightsPerAirportQuery extends Query {
         }
 
         flightsIList = getHazelcastInstance().getList("flights");
+        airportIMap = getHazelcastInstance().getMap("airports");
 
         FlightImporter flightImporter = new FlightImporter();
         flightImporter.importToIList(flightsIList, flights);
+        AirportImporter airportImporter = new AirportImporter();
+        airportImporter.importToIMap(airportIMap, airports, AirportField.OACI);
     }
 
     public void mapReduce(){
@@ -59,7 +68,7 @@ public class PrivateFlightsPerAirportQuery extends Query {
         final KeyValueSource<String, Flight> source = KeyValueSource.fromList(flightsIList);
         Job<String, Flight> job = jobTracker.newJob(source);
 
-        ICompletableFuture<Set<Map.Entry<String, Double>>> future = job
+        ICompletableFuture<List<Map.Entry<String, Double>>> future = job
                 .mapper( new PrivateFlightPerAirportMapper())
                 .combiner( new FlightPredicateCombinerFactory<>())
                 .reducer(new PercentageFlightReducerFactory())

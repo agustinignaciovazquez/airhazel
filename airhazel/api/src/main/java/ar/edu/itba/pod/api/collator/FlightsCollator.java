@@ -5,7 +5,7 @@ import com.hazelcast.mapreduce.Collator;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class FlightsCollator implements Collator<Map.Entry<String, Long>, Set<Map.Entry<String, Long>>> {
+public class FlightsCollator implements Collator<Map.Entry<String, Long>, List<Map.Entry<String, Long>>> {
     private Integer n;
 
     public FlightsCollator(int n) {
@@ -17,7 +17,7 @@ public class FlightsCollator implements Collator<Map.Entry<String, Long>, Set<Ma
     }
 
     @Override
-    public Set<Map.Entry<String, Long>> collate(Iterable<Map.Entry<String, Long>> values) {
+    public List<Map.Entry<String, Long>> collate(Iterable<Map.Entry<String, Long>> values) {
         Set<Map.Entry<String, Long>> result = new TreeSet<>((o1, o2) -> {
             //Descendant by quantity of flights
             if (!o1.getValue().equals(o2.getValue())){
@@ -31,8 +31,8 @@ public class FlightsCollator implements Collator<Map.Entry<String, Long>, Set<Ma
         }
 
         if(n == null)
-            return result;
+            return new ArrayList<>(result);
 
-        return result.stream().limit(n).collect(Collectors.toSet());
+        return result.stream().limit(n).collect(Collectors.toList());
     }
 }

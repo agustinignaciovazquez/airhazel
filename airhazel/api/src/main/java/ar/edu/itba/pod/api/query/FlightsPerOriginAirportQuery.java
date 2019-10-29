@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -35,7 +36,7 @@ public class FlightsPerOriginAirportQuery extends Query {
     private MultiMap<String, Flight> flightsMultiMap;
     private String originOaci;
     private int n;
-    private Set<Map.Entry<String, Long>> result;
+    private List<Map.Entry<String, Long>> result;
 
     private static Logger LOGGER = LoggerFactory.getLogger(FlightsPerOriginAirportQuery.class);
 
@@ -70,7 +71,7 @@ public class FlightsPerOriginAirportQuery extends Query {
         final KeyValueSource<String, Flight> source = KeyValueSource.fromMultiMap(flightsMultiMap);
         Job<String, Flight> job = jobTracker.newJob(source);
 
-        ICompletableFuture<Set<Map.Entry<String, Long>>> future = job
+        ICompletableFuture<List<Map.Entry<String, Long>>> future = job
                 .keyPredicate( new KeyStringPredicate(originOaci))
                 .mapper( new FlightTypePerAirportMapper(FlightType.DEPARTURE, FlightField.DESTINATION_OACI))
                 .combiner( new SumCombinerFactory<>() )

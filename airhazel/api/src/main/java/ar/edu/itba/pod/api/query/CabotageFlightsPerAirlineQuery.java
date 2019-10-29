@@ -1,6 +1,6 @@
 package ar.edu.itba.pod.api.query;
 
-import ar.edu.itba.pod.api.collator.CalculatePercentageFlightCollator;
+import ar.edu.itba.pod.api.collator.CalculatePercentageAirlineCollator;
 import ar.edu.itba.pod.api.combiner.SumCombinerFactory;
 import ar.edu.itba.pod.api.mapper.FlightPerAirlineMapper;
 import ar.edu.itba.pod.api.model.Flight;
@@ -31,7 +31,7 @@ import java.util.concurrent.ExecutionException;
 public class CabotageFlightsPerAirlineQuery extends Query{
     private MultiMap<String, Flight> flightsMultiMap;
         private int n;
-        private Set<Map.Entry<String, Double>> result;
+        private List<Map.Entry<String, Double>> result;
 
         private static Logger LOGGER = LoggerFactory.getLogger(FlightsPerOriginAirportQuery.class);
 
@@ -65,13 +65,13 @@ public class CabotageFlightsPerAirlineQuery extends Query{
         final KeyValueSource<String, Flight> source = KeyValueSource.fromMultiMap(flightsMultiMap);
         Job<String, Flight> job = jobTracker.newJob(source);
         //List<String> keys = Arrays.asList(FlightClassification.CABOTAGE.getName(),FlightClassification.NOT_AVAILABLE.getName());
-        ICompletableFuture<Set<Map.Entry<String, Double>>> future = job
+        ICompletableFuture<List<Map.Entry<String, Double>>> future = job
                 //.keyPredicate( new KeyStringListPredicate(keys))
                 .keyPredicate( new KeyStringPredicate(FlightClassification.CABOTAGE.getName()))
                 .mapper(new FlightPerAirlineMapper())
                 .combiner(new SumCombinerFactory<>())
                 .reducer(new CountReducerFactory<>())
-                .submit(new CalculatePercentageFlightCollator(n));
+                .submit(new CalculatePercentageAirlineCollator(n));
 
 
         try {

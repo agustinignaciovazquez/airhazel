@@ -4,23 +4,20 @@ import ar.edu.itba.pod.api.util.Constants;
 import com.hazelcast.map.impl.MapEntrySimple;
 import com.hazelcast.mapreduce.Collator;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class CalculatePercentageFlightCollator implements Collator<Map.Entry<String, Long>, Set<Map.Entry<String, Double>>>, Constants {
+public class CalculatePercentageAirlineCollator implements Collator<Map.Entry<String, Long>, List<Map.Entry<String, Double>>>, Constants {
 
     private int n;
 
-    public CalculatePercentageFlightCollator(int n) {
+    public CalculatePercentageAirlineCollator(int n) {
         this.n = n;
     }
 
     @Override
-    public Set<Map.Entry<String, Double>> collate(Iterable<Map.Entry<String, Long>> values) {
+    public List<Map.Entry<String, Double>> collate(Iterable<Map.Entry<String, Long>> values) {
         Long totalAirlines = getTotalFromKey(values);
         Set<Map.Entry<String, Double>> result = new TreeSet<>((o1, o2) -> {
             if (!o1.getValue().equals(o2.getValue())){
@@ -29,11 +26,24 @@ public class CalculatePercentageFlightCollator implements Collator<Map.Entry<Str
             return o1.getKey().compareTo(o2.getKey());
         });
 
+        Optional<Map.Entry<String,Double>> others = Optional.empty();
         for (Map.Entry<String, Long> value : values) {
-            result.add(new MapEntrySimple<>(value.getKey(), 100.0 * value.getValue()/totalAirlines));
+            if(!TOTAL_AIRLINE_COUNT.equals(value.getKey())) {
+                Map.Entry<String,Double> entry =new MapEntrySimple<>(value.getKey(), 100.0 * value.getValue()/totalAirlines);
+                //Ignore others value so its not sorted
+                if(!OTHERS_AIRLINE_COUNT.equals(entry.getKey())){
+                    result.add(entry);
+                }else{
+                    //Store the others entry for further use
+                    others = Optional.ofNullable(entry);
+                }
+            }
+
         }
 
-        return result.stream().limit(n).collect(Collectors.toSet());
+        List<Map.Entry<String, Double>> r = result.stream().limit(n).collect(Collectors.toList());
+        others.ifPresent(r::add);
+        return r;
     }
 
     private Long getTotalFromKey(Iterable<Map.Entry<String, Long>> iterable){

@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -33,7 +34,7 @@ import java.util.concurrent.ExecutionException;
 public class FlightsPerAirportQuery extends Query {
     private IList<Flight> flightsIList;
     private IMap<String, Airport> airportIMap;
-    private Set<Map.Entry<String, Long>> result;
+    private List<Map.Entry<String, Long>> result;
 
     private static org.slf4j.Logger LOGGER = LoggerFactory.getLogger(FlightsPerAirportQuery.class);
 
@@ -73,7 +74,7 @@ public class FlightsPerAirportQuery extends Query {
         final KeyValueSource<String, Flight> source = KeyValueSource.fromList(flightsIList);
         Job<String, Flight> job = jobTracker.newJob(source);
 
-        ICompletableFuture<Set<Map.Entry<String, Long>>> future = job
+        ICompletableFuture<List<Map.Entry<String, Long>>> future = job
                 .mapper( new FlightPerAirportMapper() )
                 .combiner( new SumCombinerFactory<>() )
                 .reducer( new CountReducerFactory<>() )

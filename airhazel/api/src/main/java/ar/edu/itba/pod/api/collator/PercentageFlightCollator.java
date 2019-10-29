@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-public class PercentageFlightCollator implements Collator<Map.Entry<String, Double>, Set<Map.Entry<String, Double>>> {
+public class PercentageFlightCollator implements Collator<Map.Entry<String, Double>, List<Map.Entry<String, Double>>> {
 
     private int n;
 
@@ -17,10 +17,10 @@ public class PercentageFlightCollator implements Collator<Map.Entry<String, Doub
     }
 
     @Override
-    public Set<Map.Entry<String, Double>> collate(Iterable<Map.Entry<String, Double>> values) {
+    public List<Map.Entry<String, Double>> collate(Iterable<Map.Entry<String, Double>> values) {
         Set<Map.Entry<String, Double>> result = new TreeSet<>((o1, o2) -> {
             if (!o1.getValue().equals(o2.getValue())){
-                return (o2.getValue().compareTo(o1.getValue()));
+                return (o1.getValue().compareTo(o2.getValue()));
             }
             return o1.getKey().compareTo(o2.getKey());
         });
@@ -29,6 +29,6 @@ public class PercentageFlightCollator implements Collator<Map.Entry<String, Doub
             result.add(value);
         }
 
-        return result.stream().limit(n).collect(Collectors.toSet());
+        return result.stream().limit(n).collect(Collectors.toList());
     }
 }

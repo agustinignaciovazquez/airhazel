@@ -19,9 +19,9 @@ public class FlightPredicateCombinerFactory<T> implements CombinerFactory<T, Boo
         private AtomicLong totalFlights = new AtomicLong(0);
 
         @Override
-        public void combine(Boolean privateFlight) {
+        public void combine(Boolean predicatedFlight) {
             totalFlights.addAndGet(1L);
-            if (privateFlight)
+            if (predicatedFlight)
                 predicateFlights.addAndGet(1L);
         }
 

@@ -13,18 +13,7 @@ import java.util.List;
 public class FlightImporter implements Importer<Flight> {
     @Override
     public void importToIList(IList<Flight> iList, Collection<Flight> collection) {
-        int LIMIT = 1000;
-        List<Flight> list = new ArrayList<>();
-
-        for (Flight m : collection){
-            list.add(m);
-            if (list.size() == LIMIT){
-                iList.addAll(list);
-                list.clear();
-            }
-        }
-
-        iList.addAll(list);
+        iList.addAll(collection);
     }
 
     @Override

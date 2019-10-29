@@ -22,12 +22,13 @@ public class FlightPerAirportMapper implements Mapper<String, Flight, String, Lo
 
     @Override
     public void map(String s, Flight flight, Context<String ,Long> context) {
+        IMap<String, Airport> airports = instance.getMap("airports");
         switch (flight.getFlightType()){
             case DEPARTURE:
-                EmitIfAirportIsPresent(flight, FlightField.ORIGIN_OACI,context);
+                EmitIfAirportIsPresent(airports, flight, FlightField.ORIGIN_OACI,context);
                 break;
             case LANDING:
-                EmitIfAirportIsPresent(flight, FlightField.DESTINATION_OACI,context);
+                EmitIfAirportIsPresent(airports, flight, FlightField.DESTINATION_OACI,context);
                 break;
             default:
                 LOGGER.debug("FlightPerAirportMapper arg: {}", flight.getFlightType());
@@ -35,8 +36,7 @@ public class FlightPerAirportMapper implements Mapper<String, Flight, String, Lo
         }
     }
 
-    private void EmitIfAirportIsPresent(Flight flight, FlightField flightField, Context<String ,Long> context){
-        IMap<String, Airport> airports = instance.getMap("airports");
+    private void EmitIfAirportIsPresent(IMap<String, Airport> airports, Flight flight, FlightField flightField, Context<String ,Long> context){
         Optional<Airport> airport = Optional.ofNullable(airports.get(flight.getField(flightField)));
         airport.ifPresent(ap -> context.emit(flight.getField(flightField), 1L));
     }
