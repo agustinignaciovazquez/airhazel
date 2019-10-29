@@ -9,7 +9,7 @@
   <groupId>ar.edu.itba.pod</groupId>
   <artifactId>airhazel-client</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>airhazel-client</name>
+  <name>tpe2-g13-client</name>
   <dependencies>
     <dependency>
       <groupId>ar.edu.itba.pod</groupId>

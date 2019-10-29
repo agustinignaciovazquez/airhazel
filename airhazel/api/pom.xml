@@ -9,7 +9,7 @@
   <groupId>ar.edu.itba.pod</groupId>
   <artifactId>airhazel-api</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>airhazel-api</name>
+  <name>tpe2-g13-api</name>
   <dependencies>
     <dependency>
       <groupId>com.hazelcast</groupId>

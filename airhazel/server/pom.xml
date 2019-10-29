@@ -9,7 +9,7 @@
   <groupId>ar.edu.itba.pod</groupId>
   <artifactId>airhazel-server</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>airhazel-server</name>
+  <name>tpe2-g13-server</name>
   <dependencies>
     <dependency>
       <groupId>ar.edu.itba.pod</groupId>
