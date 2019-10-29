@@ -96,8 +96,8 @@ public class FlightsPerOriginAirportQuery extends Query {
                 String out = oaci + ";" + e.getValue() + "\n";
                 Files.write(path, out.getBytes(), StandardOpenOption.APPEND);
             }
-        }
-        catch (IOException e) {
+            //flightsMultiMap.clear();
+        } catch (IOException e) {
             e.printStackTrace();
             LOGGER.error("I/O Exception while writing output logs");
         }

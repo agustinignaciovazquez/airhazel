@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
@@ -85,14 +86,16 @@ public class PrivateFlightsPerAirportQuery extends Query {
     public void log(Path path) {
         String header = "OACI;Porcentaje\n";
         try {
+            DecimalFormat dc = new DecimalFormat("#.##");
             Files.write(path, header.getBytes());
             for (Map.Entry<String, Double> e : result) {
                 String oaci = e.getKey();
-                String out = oaci + ";" + e.getValue() + "\n";
+                String out = oaci + ";" + dc.format(e.getValue()) + "%\n";
                 Files.write(path, out.getBytes(), StandardOpenOption.APPEND);
             }
-        }
-        catch (IOException e) {
+            //airportIMap.clear();
+            //flightsIList.clear();
+        } catch (IOException e) {
             LOGGER.error("Error writing to out file");
         }
     }

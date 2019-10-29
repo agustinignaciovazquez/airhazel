@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
@@ -87,22 +88,17 @@ public class CabotageFlightsPerAirlineQuery extends Query{
         String header = "Aerolinea;Porcentaje\n";
         try {
             Files.write(path, header.getBytes());
+            DecimalFormat dc = new DecimalFormat("#.##");
             Map.Entry<String, Double> others = null;
             for (Map.Entry<String, Double> e : result) {
-                if(e.getKey().equals("Otros")){
-                    others = e;
-                    continue;
-                }
+
                 String airline = e.getKey();
-                String out = airline + ";" + e.getValue() + "\n";
+                String out = airline + ";" + dc.format(e.getValue()) + "%\n";
                 Files.write(path, out.getBytes(), StandardOpenOption.APPEND);
             }
-            if(others != null){
-                String out = "Otros" + ";" + others.getValue() + "\n";
-                Files.write(path, out.getBytes(), StandardOpenOption.APPEND);
-            }
-        }
-        catch (IOException e) {
+            //flightsMultiMap.clear();
+
+        } catch (IOException e) {
             LOGGER.error("Error writing to out file");
         }
     }

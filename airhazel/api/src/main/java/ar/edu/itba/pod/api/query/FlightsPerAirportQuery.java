@@ -101,8 +101,9 @@ public class FlightsPerAirportQuery extends Query {
                 String out = oaci + ";" + airportIMap.get(oaci).getAirportName() + ";" + e.getValue() + "\n";
                 Files.write(path, out.getBytes(), StandardOpenOption.APPEND);
             }
-        }
-        catch (IOException e) {
+            //flightsIList.clear();
+            //airportIMap.clear();
+        } catch (IOException e) {
             e.printStackTrace();
             LOGGER.error("I/O Exception while writing output logs");
         }

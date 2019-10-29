@@ -101,7 +101,6 @@ public class Flight implements DataSerializable {
         throw new IllegalArgumentException();
     }
 
-    //TODO VER ALGUNA FORMA DE GUARDAR EL ENUM Y NO EL STRING
     @Override
     public void writeData(ObjectDataOutput objectDataOutput) throws IOException {
         objectDataOutput.writeInt(this.id);

@@ -101,8 +101,9 @@ public class FlightsPerStatePairQuery extends Query{
                 String out = e.getKey().getKey()+";"+e.getKey().getValue()+";"+e.getValue()+"\n";
                 Files.write(path, out.getBytes(), StandardOpenOption.APPEND);
             }
-        }
-        catch (IOException e) {
+            //airportIMap.clear();
+            //flightsIList.clear();
+        } catch (IOException e) {
             e.printStackTrace();
             LOGGER.error("I/O Exception while writing output logs");
         }
