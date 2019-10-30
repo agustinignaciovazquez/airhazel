@@ -59,6 +59,9 @@ public class PrivateFlightsPerAirportQuery extends Query {
 
         flightsIList = getHazelcastInstance().getList("g13-flights-"+randomString);
         airportIMap = getHazelcastInstance().getMap("g13-airports-"+randomString);
+        /* Clear hazelcast collections */
+        airportIMap.clear();
+        flightsIList.clear();
 
         FlightImporter flightImporter = new FlightImporter();
         flightImporter.importToIList(flightsIList, flights);
@@ -95,9 +98,6 @@ public class PrivateFlightsPerAirportQuery extends Query {
                 String out = oaci + ";" + dc.format(e.getValue()) + "%\n";
                 Files.write(path, out.getBytes(), StandardOpenOption.APPEND);
             }
-            /* Clear hazelcast collections */
-            airportIMap.clear();
-            flightsIList.clear();
         } catch (IOException e) {
             LOGGER.error("Error writing to out file");
         }

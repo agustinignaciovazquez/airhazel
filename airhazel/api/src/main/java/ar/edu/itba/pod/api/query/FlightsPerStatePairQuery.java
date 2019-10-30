@@ -67,6 +67,9 @@ public class FlightsPerStatePairQuery extends Query{
 
         FlightImporter flightsImporter = new FlightImporter();
         AirportImporter airportImporter = new AirportImporter();
+        /* Clear hazelcast collections */
+        airportIMap.clear();
+        flightsIList.clear();
 
         flightsImporter.importToIList(flightsIList, flights);
         airportImporter.importToIMap(airportIMap, airports, AirportField.OACI);
@@ -103,9 +106,6 @@ public class FlightsPerStatePairQuery extends Query{
                 String out = e.getKey().getKey()+";"+e.getKey().getValue()+";"+e.getValue()+"\n";
                 Files.write(path, out.getBytes(), StandardOpenOption.APPEND);
             }
-            /* Clear hazelcast collections */
-            airportIMap.clear();
-            flightsIList.clear();
         } catch (IOException e) {
             e.printStackTrace();
             LOGGER.error("I/O Exception while writing output logs");

@@ -62,6 +62,8 @@ public class FlightsPerOriginAirportQuery extends Query {
         }
 
         flightsMultiMap = getHazelcastInstance().getMultiMap("g13-flights-"+randomString);
+        /* Clear hazelcast collections */
+        flightsMultiMap.clear();
 
         FlightImporter flightImporter = new FlightImporter();
         flightImporter.importToMultiMap(flightsMultiMap, flights, FlightField.ORIGIN_OACI);
@@ -98,8 +100,6 @@ public class FlightsPerOriginAirportQuery extends Query {
                 String out = oaci + ";" + e.getValue() + "\n";
                 Files.write(path, out.getBytes(), StandardOpenOption.APPEND);
             }
-            /* Clear hazelcast collections */
-            flightsMultiMap.clear();
         } catch (IOException e) {
             e.printStackTrace();
             LOGGER.error("I/O Exception while writing output logs");

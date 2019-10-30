@@ -59,6 +59,8 @@ public class CabotageFlightsPerAirlineQuery extends Query implements Constants {
 
 
             flightsMultiMap = getHazelcastInstance().getMultiMap("g13-flights-"+randomString);
+            /* Clear hazelcast list */
+            flightsMultiMap.clear();
 
             FlightImporter flightImporter = new FlightImporter();
             flightImporter.importToMultiMap(flightsMultiMap, flights, FlightField.FLIGHT_CLASSIFICATION);
@@ -107,8 +109,6 @@ public class CabotageFlightsPerAirlineQuery extends Query implements Constants {
             /* Write others percentage */
             String out = "Otros;" + dc.format(100.0 - sum_percentage) + "%\n";
             Files.write(path, out.getBytes(), StandardOpenOption.APPEND);
-            /* Clear hazelcast list */
-            flightsMultiMap.clear();
         } catch (IOException e) {
             LOGGER.error("Error writing to out file");
         }

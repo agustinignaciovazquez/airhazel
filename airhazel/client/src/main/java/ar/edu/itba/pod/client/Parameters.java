@@ -16,11 +16,11 @@ public class Parameters {
     }
 
     public String getFlightsInPath() {
-        return dInPath+"/movements.csv";
+        return dInPath+"/movimientos.csv";
     }
 
     public String getAirportsInPath() {
-        return dInPath+"/airports.csv";
+        return dInPath+"/aeropuertos.csv";
     }
 
     public String getOutPath() {
